@@ -4,47 +4,39 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Esto ya lo hace Jenkins automáticamente, pero si lo tienes manual:
                 checkout scm
             }
         }
 
-        stage('Instalacion') {
+        stage('Preparacion e Instalacion') {
             steps {
-                // CAMBIO: Usamos 'bat' y 'python -m pip' para asegurar que encuentre pip
+                // Instalamos librerías
                 bat 'python -m pip install --upgrade pip'
                 bat 'python -m pip install -r requirements.txt'
-            }
-        }
-        
-        stage('Ejecucion Principal') {
-            steps {
-                // Creamos la carpeta desde Windows antes de correr el python
+                // Creamos la carpeta de salida si no existe para evitar el error de Python
                 bat 'if not exist outputs mkdir outputs'
-                bat 'python main.py'
             }
         }
 
-        stage('Pruebas Básicas') {
+        stage('Validacion de Datos') {
             steps {
-                // CAMBIO: 'test -f' es de Linux. En Windows se usa 'if exist'
                 bat 'if not exist data\\sdss_sample.csv (exit 1)'
-                echo 'Validación de datos exitosa.'
+                echo 'Dataset encontrado.'
             }
         }
 
-        stage('Ejecucion Principal') {
+        stage('Ejecucion del Modelo') {
             steps {
-                // CAMBIO: Usamos 'bat'
+                // Corremos el script de Big Data
                 bat 'python main.py'
             }
         }
     }
-    
+
     post {
         always {
-            // Esto está bien, guarda tus gráficas
-            archiveArtifacts artifacts: 'outputs/*.*', fingerprint: true
+            // Esto permite que descargues la Matriz de Confusión desde Jenkins
+            archiveArtifacts artifacts: 'outputs/*.png', allowEmptyArchive: true
         }
     }
 }
