@@ -8,6 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LinearRegression
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score
+import os
+
 
 df = pd.read_csv('data\sdss_sample.csv')
 df.head()
@@ -34,6 +36,10 @@ X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_class, y_class, te
 knn = KNeighborsClassifier(n_neighbors=5)
 knn.fit(X_train_c, y_train_c)
 
+# Crear la carpeta de salidas si no existe
+if not os.path.exists('outputs'):
+    os.makedirs('outputs')
+    
 # Predicciones y Métricas
 y_pred_c = knn.predict(X_test_c)
 acc = accuracy_score(y_test_c, y_pred_c)

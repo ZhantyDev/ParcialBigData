@@ -16,6 +16,14 @@ pipeline {
                 bat 'python -m pip install -r requirements.txt'
             }
         }
+        
+        stage('Ejecucion Principal') {
+            steps {
+                // Creamos la carpeta desde Windows antes de correr el python
+                bat 'if not exist outputs mkdir outputs'
+                bat 'python main.py'
+            }
+        }
 
         stage('Pruebas Básicas') {
             steps {
