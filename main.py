@@ -9,13 +9,12 @@ from sklearn.linear_model import LinearRegression
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, mean_squared_error, r2_score
 
-df = pd.read_csv('./sdss_sample.csv')
+df = pd.read_csv('data\sdss_sample.csv')
 df.head()
 
 print("Valores nulos antes de la limpieza:")
 print(df.isnull().sum())
 
-df = pd.read_csv('./sdss_sample.csv')
 class_mapping = {
     'GALAXY': 1,
     'STAR': 2,
