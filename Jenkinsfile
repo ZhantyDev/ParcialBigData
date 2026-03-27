@@ -1,22 +1,41 @@
 pipeline {
     agent any
+    
     stages {
-        stage('Instalación de Librerías') {
+        stage('Checkout') {
             steps {
-                // Usamos 'bat' en lugar de 'sh' para Windows
-                bat 'pip install --upgrade pip'
-                bat 'pip install -r requirements.txt'
+                // Esto ya lo hace Jenkins automáticamente, pero si lo tienes manual:
+                checkout scm
             }
         }
-        stage('Ejecución del Modelo') {
+
+        stage('Instalacion') {
             steps {
-                // Ejecuta tu script de astronomía
+                // CAMBIO: Usamos 'bat' y 'python -m pip' para asegurar que encuentre pip
+                bat 'python -m pip install --upgrade pip'
+                bat 'python -m pip install -r requirements.txt'
+            }
+        }
+
+        stage('Pruebas Básicas') {
+            steps {
+                // CAMBIO: 'test -f' es de Linux. En Windows se usa 'if exist'
+                bat 'if not exist data\\sdss_sample.csv (exit 1)'
+                echo 'Validación de datos exitosa.'
+            }
+        }
+
+        stage('Ejecucion Principal') {
+            steps {
+                // CAMBIO: Usamos 'bat'
                 bat 'python main.py'
             }
         }
     }
+    
     post {
         always {
+            // Esto está bien, guarda tus gráficas
             archiveArtifacts artifacts: 'outputs/*.*', fingerprint: true
         }
     }
