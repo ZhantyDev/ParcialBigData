@@ -1,31 +1,22 @@
 pipeline {
     agent any
     stages {
-        stage('Checkout') {
+        stage('Instalación de Librerías') {
             steps {
-                checkout scm
+                // Usamos 'bat' en lugar de 'sh' para Windows
+                bat 'pip install --upgrade pip'
+                bat 'pip install -r requirements.txt'
             }
         }
-        stage('Instalacion') {
+        stage('Ejecución del Modelo') {
             steps {
-                sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Pruebas Básicas') {
-            steps {
-                // Validar que el CSV existe antes de correr el ML
-                sh 'test -f data/sdss_sample.csv'
-            }
-        }
-        stage('Ejecucion Principal') {
-            steps {
-                sh 'python main.py'
+                // Ejecuta tu script de astronomía
+                bat 'python main.py'
             }
         }
     }
     post {
         always {
-            // Guarda los resultados en la interfaz de Jenkins
             archiveArtifacts artifacts: 'outputs/*.*', fingerprint: true
         }
     }
